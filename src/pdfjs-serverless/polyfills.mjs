@@ -1,3 +1,15 @@
+import { sumPrecise } from './math-sum-precise.mjs'
+
+// `Math.sumPrecise` is used by PDF.js v6.1+ but is not yet available in
+// supported runtimes such as Node.js 22–26.
+if (typeof Math.sumPrecise === 'undefined') {
+  Object.defineProperty(Math, 'sumPrecise', {
+    value: sumPrecise,
+    writable: true,
+    configurable: true,
+  })
+}
+
 // Promise polyfill for Node.js < 22 and some browsers.
 if (typeof Promise.withResolvers === 'undefined') {
   Promise.withResolvers = function () {
