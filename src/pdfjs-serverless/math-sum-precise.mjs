@@ -7,12 +7,18 @@ const PENULTIMATE_DOUBLE = 1.7976931348623155e+308
 const TWO_TO_1023 = 8.98846567431158e+307
 const MAX_ULP = MAX_DOUBLE - PENULTIMATE_DOUBLE
 
+/**
+ * Split a floating-point addition into its rounded sum and exact error.
+ */
 function twoSum(x, y) {
   const hi = x + y
   const lo = y - (hi - x)
   return { hi, lo }
 }
 
+/**
+ * Sum finite numbers with error-free partials and a final correctly rounded result.
+ */
 function sumFinite(values) {
   const partials = []
   let overflow = 0
@@ -122,11 +128,19 @@ function sumFinite(values) {
   return hi
 }
 
+/**
+ * Sum an iterable of numbers using the proposed Math.sumPrecise semantics.
+ */
 export function sumPrecise(items) {
   const values = []
   let state = 'minus-zero'
+  let count = 0
 
   for (const value of items) {
+    count += 1
+    if (count >= 2 ** 53) {
+      throw new RangeError('Math.sumPrecise cannot sum 2 ** 53 or more items')
+    }
     if (typeof value !== 'number') {
       throw new TypeError('Math.sumPrecise only accepts numbers')
     }
