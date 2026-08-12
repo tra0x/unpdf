@@ -1,4 +1,5 @@
 /* eslint-disable ts/ban-ts-comment */
+import { execFileSync } from 'node:child_process'
 import { describe, expect, it } from 'vitest'
 import { definePDFJSModule, extractText, getResolvedPDFJS } from '../src/index'
 import { getPDF } from './utils'
@@ -14,6 +15,25 @@ describe('pdfjs resolution', () => {
     expect(sumPrecise([1e20, 1, -1e20])).toBe(1)
     expect(sumPrecise([Infinity, -Infinity])).toBeNaN()
     expect(() => sumPrecise([1, '2'] as unknown as number[])).toThrow(TypeError)
+  })
+
+  it('preserves an existing Math.sumPrecise implementation', () => {
+    execFileSync(process.execPath, [
+      '--input-type=module',
+      '--eval',
+      `
+        const nativeSumPrecise = () => 42
+        Object.defineProperty(Math, 'sumPrecise', {
+          value: nativeSumPrecise,
+          writable: true,
+          configurable: true,
+        })
+        await import('./dist/pdfjs.mjs')
+        if (Math.sumPrecise !== nativeSumPrecise) {
+          throw new Error('The existing Math.sumPrecise implementation was replaced')
+        }
+      `,
+    ], { cwd: process.cwd() })
   })
 
   it('can resolve a custom PDF.js version', async () => {

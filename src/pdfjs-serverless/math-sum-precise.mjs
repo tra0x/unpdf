@@ -1,5 +1,6 @@
-// Adapted from the TC39 Math.sumPrecise reference implementation:
-// https://github.com/tc39/proposal-math-sum/blob/main/polyfill/polyfill.mjs
+// The finite summation algorithm is adapted from math.sumprecise v1.0.1,
+// distributed under the MIT License. See THIRD_PARTY_LICENSES.md.
+// https://github.com/es-shims/Math.sumPrecise
 
 const MAX_DOUBLE = 1.7976931348623157e+308
 const PENULTIMATE_DOUBLE = 1.7976931348623155e+308
