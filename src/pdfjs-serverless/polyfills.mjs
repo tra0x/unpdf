@@ -1,15 +1,3 @@
-import { sumPrecise } from './math-sum-precise.mjs'
-
-// `Math.sumPrecise` is used by PDF.js v6.1+ but is not yet available in
-// supported runtimes such as Node.js 22–26.
-if (typeof Math.sumPrecise === 'undefined') {
-  Object.defineProperty(Math, 'sumPrecise', {
-    value: sumPrecise,
-    writable: true,
-    configurable: true,
-  })
-}
-
 // Promise polyfill for Node.js < 22 and some browsers.
 if (typeof Promise.withResolvers === 'undefined') {
   Promise.withResolvers = function () {
@@ -59,6 +47,26 @@ if (typeof Uint8Array.prototype.toHex === 'undefined') {
         hex += this[i].toString(16).padStart(2, '0')
       }
       return hex
+    },
+    writable: true,
+    configurable: true,
+  })
+}
+
+// `Math.sumPrecise` is used by PDF.js v6.1+ to repair embedded fonts, lay out
+// XFA forms and derive AES-256 keys. Not yet available in most runtimes.
+// Every call site sums a short list of byte lengths, glyph sizes or small
+// floats, where the last-ulp difference to correctly rounded summation cannot
+// change the result – so this deliberately skips the algorithm the
+// specification asks for.
+if (typeof Math.sumPrecise === 'undefined') {
+  Object.defineProperty(Math, 'sumPrecise', {
+    value(items) {
+      let sum = 0
+      for (const value of items) {
+        sum += value
+      }
+      return sum
     },
     writable: true,
     configurable: true,

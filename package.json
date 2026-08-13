@@ -56,7 +56,6 @@
     }
   },
   "files": [
-    "THIRD_PARTY_LICENSES.md",
     "dist"
   ],
   "engines": {
